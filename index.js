@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb'); // Removed unused ObjectId import
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb'); // Removed unused ObjectId import
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -42,6 +42,24 @@ async function run() {
 
     app.get('/employee', async (req, res) => {
       const result = await employeeCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.put('/employee/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log('Received ID:', id);
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateemp = req.body;
+      const emp = {
+        $set: {
+          fname: updateemp.fname,
+          lname:updateemp.lname,
+          phone: updateemp.phone,
+          
+        }
+      };
+      const result = await employeeCollection.updateOne(filter, emp, options);
       res.send(result);
     });
 
